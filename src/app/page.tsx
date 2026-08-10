@@ -1,11 +1,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { getEvents } from '@/lib/api'
+// import { getEvents } from '@/lib/api'
 import { site, fees, impact } from '@/lib/site'
 import { horses } from '@/lib/horses'
 import Reveal from '@/components/Reveal'
 import CountUp from '@/components/CountUp'
 import Testimonials from '@/components/Testimonials'
+import { assetPath } from '@/lib/path'
 
 export const metadata = {
   title: 'Waikato Equitherapy | Therapeutic riding in Hamilton',
@@ -56,7 +57,8 @@ const programmes = [
 ]
 
 export default async function HomePage() {
-  const events = await getEvents().catch(() => [])
+  // const events = await getEvents().catch(() => [])
+   const events: any[] = []
   const upcoming = events.slice(0, 2)
 
   return (
@@ -109,7 +111,7 @@ export default async function HomePage() {
               <div className="hero-art">
                 <div className="arch frame" style={{ aspectRatio: '4 / 5', position: 'relative' }}>
                   <Image
-                    src="/images/hero-horse-bond.jpg"
+                    src={assetPath("/images/hero-horse-bond.jpg")}
                     alt="A young rider resting her head against her horse during a quiet moment at the centre"
                     fill
                     sizes="(max-width: 900px) 90vw, 480px"
@@ -237,7 +239,7 @@ export default async function HomePage() {
                 <Link key={h.name} href="/horses" className="herd-card">
                   <span className="arch" style={{ display: 'block', position: 'relative', aspectRatio: '3 / 4', background: 'var(--sand)' }}>
                     <Image
-                      src={h.image}
+                      src={assetPath(h.image)}
                       alt={`${h.name}, one of our therapy horses`}
                       fill
                       sizes="180px"
@@ -269,7 +271,7 @@ export default async function HomePage() {
             <Reveal>
               <div className="arch frame" style={{ position: 'relative', aspectRatio: '6 / 5' }}>
                 <Image
-                  src="/images/volunteer-team.jpg"
+                  src={assetPath("/images/volunteer-team.jpg")}
                   alt="Volunteers standing together with one of the therapy horses"
                   fill
                   sizes="(max-width: 900px) 90vw, 500px"
@@ -289,7 +291,9 @@ export default async function HomePage() {
               </p>
               <div className="row">
                 <Link href="/volunteer" className="btn btn-primary">Volunteer with us</Link>
-                <a href="/forms/volunteer-form-2026.pdf" className="btn btn-ghost">Download the form</a>
+                <a href={assetPath("/forms/volunteer-form-2026.pdf")} className="btn btn-ghost" target="_blank" rel="noopener noreferrer">
+                  Download the form
+                </a>
               </div>
             </Reveal>
           </div>

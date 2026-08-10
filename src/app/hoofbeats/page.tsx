@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Reveal from '@/components/Reveal'
 import { fees, site } from '@/lib/site'
+import { assetPath } from '@/lib/path'
 
 export const metadata: Metadata = {
   title: 'Hoofbeats',
@@ -19,7 +20,7 @@ export default function HoofbeatsPage() {
             <Reveal>
               <div className="arch frame" style={{ position: 'relative', aspectRatio: '9 / 10', maxWidth: 420 }}>
                 <Image
-                  src="/images/hoofbeats-family.jpg"
+                  src={assetPath("/images/hoofbeats-family.jpg")}
                   alt="A family together with a young rider during a Sunday session"
                   fill
                   sizes="(max-width: 900px) 90vw, 420px"
@@ -36,7 +37,9 @@ export default function HoofbeatsPage() {
                 Siblings ride together, friends come along, and nobody is treated as a special case.
               </p>
               <div className="row" style={{ marginTop: 28 }}>
-                <a href="/forms/hoofbeats-consent-form-2026.pdf" className="btn btn-primary" download>Download the Hoofbeats form</a>
+                <a href={assetPath("/forms/hoofbeats-consent-form-2026.pdf")} className="btn btn-primary" download>
+                  Download the Hoofbeats form
+                </a>
                 <Link href="/contact" className="btn btn-ghost">Ask about a spot</Link>
               </div>
             </Reveal>
@@ -95,7 +98,9 @@ export default function HoofbeatsPage() {
                   Send it to {site.emailGeneral}, or bring it with you on the day.
                 </p>
               </div>
-              <a href="/forms/hoofbeats-consent-form-2026.pdf" className="btn btn-primary" download>Hoofbeats form (PDF)</a>
+              <a href={assetPath("/forms/hoofbeats-consent-form-2026.pdf")} className="btn btn-primary" download>
+                Hoofbeats form (PDF)
+              </a>
             </div>
           </Reveal>
         </div>

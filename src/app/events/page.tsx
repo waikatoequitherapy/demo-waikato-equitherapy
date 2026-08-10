@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Reveal from '@/components/Reveal'
 import { getEvents } from '@/lib/api'
 import { site } from '@/lib/site'
+import { assetPath } from '@/lib/path'
 
 export const metadata: Metadata = {
   title: 'Events',
@@ -46,7 +47,7 @@ export default async function EventsPage() {
               </div>
               <div className="quiz-qr">
                 <Image
-                  src="/images/quiz-night-qr.png"
+                  src={assetPath("/images/quiz-night-qr.png")}
                   alt="QR code linking to the quiz night registration page"
                   width={190}
                   height={190}

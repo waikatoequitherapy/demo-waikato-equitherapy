@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Reveal from '@/components/Reveal'
 import { site, fees, forms, pendingForms } from '@/lib/site'
+import { assetPath } from '@/lib/path'
 
 export const metadata: Metadata = {
   title: 'Our services',
@@ -39,7 +40,7 @@ export default function ServicesPage() {
             <Reveal delay={120}>
               <div className="arch frame" style={{ position: 'relative', aspectRatio: '4 / 5', maxWidth: 420, marginLeft: 'auto' }}>
                 <Image
-                  src="/images/how-we-help-riding.jpg"
+                  src={assetPath("/images/how-we-help-riding.jpg")}
                   alt="A coach leading a horse while a young rider sits in the saddle"
                   fill
                   sizes="(max-width: 900px) 90vw, 420px"
@@ -139,7 +140,9 @@ export default function ServicesPage() {
                   <h3 style={{ fontSize: 24, margin: '16px 0 10px' }}>{p.title}</h3>
                   <p className="body small" style={{ marginBottom: 18 }}>{p.body}</p>
                   <p style={{ fontFamily: 'var(--font-display)', fontSize: 21, color: 'var(--clay)', marginBottom: 20 }}>{p.price}</p>
-                  <a href="/forms/hoofbeats-consent-form-2026.pdf" className="btn btn-ghost btn-sm">Hoofbeats form (PDF)</a>
+                  <a href={assetPath("/forms/hoofbeats-consent-form-2026.pdf")} className="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer">
+                    Hoofbeats form (PDF)
+                  </a>
                 </article>
               </Reveal>
             ))}

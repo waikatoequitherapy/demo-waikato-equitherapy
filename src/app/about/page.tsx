@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Reveal from '@/components/Reveal'
 import CountUp from '@/components/CountUp'
 import { site, volunteerFacts } from '@/lib/site'
+import { assetPath } from '@/lib/path'
 
 export const metadata: Metadata = {
   title: 'About us',
@@ -28,7 +29,7 @@ export default function AboutPage() {
             <Reveal>
               <div className="arch frame" style={{ position: 'relative', aspectRatio: '4 / 5', maxWidth: 440 }}>
                 <Image
-                  src="/images/about-multigenerational.jpg"
+                  src={assetPath("/images/about-multigenerational.jpg")}
                   alt="A volunteer walking beside a young rider on a pony in the arena"
                   fill
                   sizes="(max-width: 900px) 90vw, 440px"

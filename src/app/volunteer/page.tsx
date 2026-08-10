@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Reveal from '@/components/Reveal'
 import { site, volunteerFacts, pendingForms } from '@/lib/site'
+import { assetPath } from '@/lib/path'
 
 export const metadata: Metadata = {
   title: 'Volunteer',
@@ -35,14 +36,18 @@ export default function VolunteerPage() {
                 There is a role here that fits around your week.
               </p>
               <div className="row" style={{ marginTop: 28 }}>
-                <a href="/forms/volunteer-form-2026.pdf" className="btn btn-primary" download>Download the volunteer form</a>
-                <Link href="/contact" className="btn btn-ghost">Ask a question first</Link>
+                <a href={assetPath("/forms/volunteer-form-2026.pdf")} className="btn btn-primary" download>
+                  Download the volunteer form
+                </a>
+                <Link href="/contact" className="btn btn-ghost">
+                  Ask a question first
+                </Link>
               </div>
             </Reveal>
             <Reveal delay={120}>
               <div className="arch frame" style={{ position: 'relative', aspectRatio: '6 / 5', maxWidth: 460, marginLeft: 'auto' }}>
                 <Image
-                  src="/images/volunteer-team.jpg"
+                  src={assetPath("/images/volunteer-team.jpg")}
                   alt="Volunteers standing together with one of the therapy horses"
                   fill
                   sizes="(max-width: 900px) 90vw, 460px"
@@ -122,7 +127,7 @@ export default function VolunteerPage() {
             <div>
               <div style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.16)', borderRadius: 18, padding: 28 }}>
                 <h3 style={{ fontSize: 21, color: '#fff', marginBottom: 14 }}>Volunteer documents</h3>
-                <a href="/forms/volunteer-form-2026.pdf" className="btn btn-light" style={{ width: '100%', marginBottom: 10 }} download>
+                <a href={assetPath("/forms/volunteer-form-2026.pdf")} className="btn btn-light" style={{ width: '100%', marginBottom: 10 }} download>
                   Volunteer form 2026 (PDF)
                 </a>
                 <p style={{ color: 'rgba(255,255,255,.6)', fontSize: 13, marginTop: 14 }}>

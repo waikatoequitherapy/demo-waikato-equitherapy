@@ -1,3 +1,4 @@
+import { assetPath } from '@/lib/path'
 import Image from 'next/image'
 
 /**
@@ -19,7 +20,7 @@ export default function Logo({
   return (
     <span className="logo-lockup">
       <Image
-        src={light ? '/logo-mark-white.png' : '/logo-mark.png'}
+        src={light ? assetPath('/logo-mark-white.png')  : assetPath('/logo-mark.png') }
         alt=""
         width={380}
         height={230}
