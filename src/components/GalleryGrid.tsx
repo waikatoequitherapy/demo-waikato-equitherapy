@@ -85,7 +85,8 @@ export default function GalleryGrid({ images }: { images: GalleryItem[] }) {
           <button className="lb-nav lb-prev" onClick={e => { e.stopPropagation(); step(-1) }} aria-label="Previous photo">‹</button>
           <figure onClick={e => e.stopPropagation()}>
             <Image
-              src={shown[active].imageUrl}
+              // src={shown[active].imageUrl}
+              src={assetPath(shown[active].imageUrl)}
               alt={shown[active].title}
               width={1200}
               height={1200}
