@@ -36,9 +36,9 @@ const FALLBACK: GalleryItem[] = [
 ]
 
 export default async function GalleryPage() {
-  const apiImages = await getGallery().catch(() => [])
-  const images: GalleryItem[] = apiImages.length > 0 ? apiImages : FALLBACK
-
+  // const apiImages = await getGallery().catch(() => [])
+  // const images: GalleryItem[] = apiImages.length > 0 ? apiImages : FALLBACK
+  const images: GalleryItem[] = FALLBACK
   return (
     <>
       <section style={{ background: 'var(--oat)', paddingTop: 56, paddingBottom: 48 }}>
