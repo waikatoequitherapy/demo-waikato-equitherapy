@@ -12,7 +12,8 @@ export const metadata: Metadata = {
 }
 
 export default async function EventsPage() {
-  const events = await getEvents().catch(() => [])
+  // const events = await getEvents().catch(() => [])
+  const events: any[] = []
 
   return (
     <>

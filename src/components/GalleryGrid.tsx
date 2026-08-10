@@ -1,6 +1,7 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
+import { assetPath } from '@/lib/path';
 
 export type GalleryItem = { id: string; imageUrl: string; title: string; category?: string }
 
@@ -66,7 +67,7 @@ export default function GalleryGrid({ images }: { images: GalleryItem[] }) {
             aria-label={`Open photo: ${img.title}`}
           >
             <Image
-              src={img.imageUrl}
+              src={assetPath(img.imageUrl)}
               alt={img.title}
               width={600}
               height={800}

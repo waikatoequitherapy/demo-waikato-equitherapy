@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Reveal from '@/components/Reveal'
 import { horses } from '@/lib/horses'
 import { site } from '@/lib/site'
+import { assetPath } from '@/lib/path'
 
 export const metadata: Metadata = {
   title: 'Our horses',
@@ -48,7 +49,7 @@ export default function HorsesPage() {
                 <article className="stall">
                   <div className="arch stall-photo">
                     <Image
-                      src={h.image}
+                      src={assetPath(h.image)}
                       alt={`${h.name}, one of the Waikato Equitherapy therapy horses`}
                       fill
                       sizes="(max-width: 640px) 45vw, (max-width: 1000px) 30vw, 250px"
