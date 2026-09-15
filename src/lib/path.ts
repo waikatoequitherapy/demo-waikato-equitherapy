@@ -1,8 +1,5 @@
-export const BASE_PATH =
-  process.env.NODE_ENV === 'production'
-    ? '/demo-waikato-equitherapy'
-    : ''
+export const BASE_PATH = "";
 
 export function assetPath(path: string) {
-  return `${BASE_PATH}${path.startsWith('/') ? path : `/${path}`}`
+  return path.startsWith("/") ? path : `/${path}`;
 }
