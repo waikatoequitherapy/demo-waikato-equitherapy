@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createEvent, updateEvent, deleteEvent, getEvents, uploadGalleryImage, getGallery } from '@/lib/api'
-const ADMIN_PIN = '1234'
+const ADMIN_PIN = 'Equitherapy@2026'
 const c = { red: 'var(--red)', creamDark: 'var(--grey)', redLight: 'var(--red-tint)', dark: '#1a1a1a', muted: '#7a6f67', border: 'var(--line)' }
 const inputStyle = { width: '100%', border: `1px solid ${c.border}`, borderRadius: '8px', padding: '10px 14px', fontSize: '14px', outline: 'none', background: 'white', boxSizing: 'border-box' as const }
 const labelStyle = { display: 'block', fontSize: '12px', fontWeight: 600 as const, color: 'var(--muted-text)', marginBottom: '6px' }
@@ -30,9 +30,9 @@ export default function AdminPage() {
       <div style={{ background: 'white', border: `1px solid ${c.border}`, borderRadius: '12px', padding: '40px', width: '100%', maxWidth: '360px' }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: c.dark, marginBottom: '8px' }}>Admin panel</h1>
         <p style={{ color: c.muted, fontSize: '14px', marginBottom: '24px' }}>Waikato Equitherapy, Nickie's dashboard</p>
-        <label style={labelStyle}>PIN</label>
-        <input type="password" value={pin} onChange={e => setPin(e.target.value)} onKeyDown={e => e.key==='Enter'&&pin===ADMIN_PIN&&setAuthed(true)} style={{...inputStyle, marginBottom: '16px'}} placeholder="Enter admin PIN" />
-        <button onClick={() => pin===ADMIN_PIN?setAuthed(true):alert('Incorrect PIN')} style={{ width: '100%', background: c.red, color: 'white', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>Sign in</button>
+        <label style={labelStyle}>Password</label>
+        <input type="password" value={pin} onChange={e => setPin(e.target.value)} onKeyDown={e => e.key==='Enter'&&pin===ADMIN_PIN&&setAuthed(true)} style={{...inputStyle, marginBottom: '16px'}} placeholder="Enter admin password" />
+        <button onClick={() => pin===ADMIN_PIN?setAuthed(true):alert('Incorrect password')} style={{ width: '100%', background: c.red, color: 'white', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>Sign in</button>
       </div>
     </div>
   )

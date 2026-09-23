@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Reveal from '@/components/Reveal'
 import GalleryGrid, { GalleryItem } from '@/components/GalleryGrid'
-import { getGallery } from '@/lib/api'
 import { horses } from '@/lib/horses'
 
 export const metadata: Metadata = {
@@ -35,10 +34,7 @@ const FALLBACK: GalleryItem[] = [
   })),
 ]
 
-export default async function GalleryPage() {
-  // const apiImages = await getGallery().catch(() => [])
-  // const images: GalleryItem[] = apiImages.length > 0 ? apiImages : FALLBACK
-  const images: GalleryItem[] = FALLBACK
+export default function GalleryPage() {
   return (
     <>
       <section style={{ background: 'var(--oat)', paddingTop: 56, paddingBottom: 48 }}>
@@ -55,7 +51,7 @@ export default async function GalleryPage() {
 
       <section style={{ paddingBottom: 72 }}>
         <div className="wrap">
-          <GalleryGrid images={images} />
+          <GalleryGrid fallback={FALLBACK} />
         </div>
       </section>
 

@@ -2,12 +2,20 @@
 import { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { assetPath } from '@/lib/path';
+import { getGallery } from '@/lib/api'
 
 export type GalleryItem = { id: string; imageUrl: string; title: string; category?: string }
 
-export default function GalleryGrid({ images }: { images: GalleryItem[] }) {
+export default function GalleryGrid({ fallback }: { fallback: GalleryItem[] }) {
+  const [images, setImages] = useState<GalleryItem[]>(fallback)
   const [filter, setFilter] = useState('All')
   const [active, setActive] = useState<number | null>(null)
+
+  useEffect(() => {
+    getGallery().then((fetched: GalleryItem[]) => {
+      if (fetched.length > 0) setImages(fetched)
+    }).catch(() => {})
+  }, [])
 
   const categories = ['All', ...Array.from(new Set(images.map(i => i.category).filter(Boolean) as string[]))]
   const shown = filter === 'All' ? images : images.filter(i => i.category === filter)
@@ -99,7 +107,7 @@ export default function GalleryGrid({ images }: { images: GalleryItem[] }) {
         </div>
       )}
 
-      <style>{`
+      <style jsx global>{`
         .masonry { columns: 4 240px; column-gap: 16px; }
         .tile {
           display: block; width: 100%; padding: 0; border: 1px solid var(--rule); background: var(--sand);
