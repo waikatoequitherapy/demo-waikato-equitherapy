@@ -76,7 +76,7 @@ export default function Footer() {
 
       <div className="footer-bottom">
         <div className="wrap footer-bottom-inner">
-          <span>© {new Date().getFullYear()} {site.name}</span>
+          <span>© {site.name}</span>
           <span>Registered charity {site.charityNumber}</span>
         </div>
       </div>
