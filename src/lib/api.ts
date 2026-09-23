@@ -62,3 +62,19 @@ export async function createEvent(data: unknown) {
   if (!res.ok) throw new Error('Failed to create event')
   return res.json()
 }
+
+export async function updateEvent(id: string | number, data: unknown) {
+  const res = await fetch(`${BASE}/api/events/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error('Failed to update event')
+  return res.json()
+}
+
+export async function deleteEvent(id: string | number) {
+  const res = await fetch(`${BASE}/api/events/${id}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error('Failed to delete event')
+  return res.json()
+}

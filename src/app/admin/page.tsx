@@ -1,20 +1,29 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { createEvent, uploadGalleryImage, getGallery } from '@/lib/api'
+import { createEvent, updateEvent, deleteEvent, getEvents, uploadGalleryImage, getGallery } from '@/lib/api'
 const ADMIN_PIN = '1234'
 const c = { red: 'var(--red)', creamDark: 'var(--grey)', redLight: 'var(--red-tint)', dark: '#1a1a1a', muted: '#7a6f67', border: 'var(--line)' }
 const inputStyle = { width: '100%', border: `1px solid ${c.border}`, borderRadius: '8px', padding: '10px 14px', fontSize: '14px', outline: 'none', background: 'white', boxSizing: 'border-box' as const }
 const labelStyle = { display: 'block', fontSize: '12px', fontWeight: 600 as const, color: 'var(--muted-text)', marginBottom: '6px' }
+const smallBtn = { padding: '6px 14px', borderRadius: '6px', border: 'none', fontWeight: 600 as const, fontSize: '12px', cursor: 'pointer' }
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false)
   const [pin, setPin] = useState('')
   const [tab, setTab] = useState<'events'|'gallery'>('events')
   const [gallery, setGallery] = useState<any[]>([])
-  const [eventStatus, setEventStatus] = useState<'idle'|'saving'|'saved'|'error'>('idle')
+  const [events, setEvents] = useState<any[]>([])
+  const [editingEvent, setEditingEvent] = useState<any|null>(null)
+  const [deletingId, setDeletingId] = useState<string|number|null>(null)
+  const [eventStatus, setEventStatus] = useState<'idle'|'saving'|'saved'|'updated'|'error'>('idle')
   const [uploadStatus, setUploadStatus] = useState<'idle'|'uploading'|'done'|'error'>('idle')
 
-  useEffect(() => { if (authed) getGallery().then(setGallery).catch(() => {}) }, [authed])
+  useEffect(() => {
+    if (authed) {
+      getGallery().then(setGallery).catch(() => {})
+      getEvents().then(setEvents).catch(() => {})
+    }
+  }, [authed])
 
   if (!authed) return (
     <div style={{ minHeight: '100vh', background: c.creamDark, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -27,6 +36,20 @@ export default function AdminPage() {
       </div>
     </div>
   )
+
+  async function handleDelete(ev: any) {
+    if (!confirm(`Delete "${ev.name}"? This cannot be undone.`)) return
+    setDeletingId(ev.id)
+    try {
+      await deleteEvent(ev.id)
+      setEvents(evts => evts.filter(e => e.id !== ev.id))
+      if (editingEvent?.id === ev.id) setEditingEvent(null)
+    } catch {
+      alert('Delete failed. Please try again.')
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: c.creamDark }}>
@@ -43,28 +66,75 @@ export default function AdminPage() {
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 1rem' }}>
         {tab === 'events' && (
           <div>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: c.dark, marginBottom: '24px' }}>Create new event</h2>
-            <form style={{ background: 'white', border: `1px solid ${c.border}`, borderRadius: '12px', padding: '32px', maxWidth: '600px', display: 'flex', flexDirection: 'column', gap: '16px' }}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: c.dark, margin: 0 }}>{editingEvent ? `Edit event — ${editingEvent.name}` : 'Create new event'}</h2>
+              {editingEvent && <button onClick={() => { setEditingEvent(null); setEventStatus('idle') }} style={{ ...smallBtn, background: 'transparent', color: c.muted, border: `1px solid ${c.border}` }}>Cancel edit</button>}
+            </div>
+            <form key={editingEvent?.id ?? 'new'} style={{ background: 'white', border: `1px solid ${c.border}`, borderRadius: '12px', padding: '32px', maxWidth: '600px', display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}
               onSubmit={async e => {
                 e.preventDefault(); setEventStatus('saving')
                 const form = e.currentTarget
                 const get = (n: string) => (form.elements.namedItem(n) as HTMLInputElement|HTMLTextAreaElement)?.value??''
-                try { await createEvent({ name:get('name'), eventDate:get('eventDate'), location:get('location'), description:get('description'), price:parseFloat(get('price'))||0, capacity:parseInt(get('capacity'))||null, published:true }); setEventStatus('saved'); form.reset() } catch { setEventStatus('error') }
+                const capacityVal = get('capacity')
+                const payload = {
+                  ...editingEvent,
+                  name: get('name'),
+                  eventDate: get('eventDate'),
+                  location: get('location'),
+                  description: get('description'),
+                  price: parseFloat(get('price'))||0,
+                  capacity: capacityVal ? parseInt(capacityVal) : null,
+                  published: true,
+                }
+                const wasEditing = !!editingEvent
+                try {
+                  if (editingEvent) {
+                    const updated = await updateEvent(editingEvent.id, payload)
+                    setEvents(evts => evts.map(ev => ev.id===updated.id ? updated : ev))
+                    setEditingEvent(null)
+                  } else {
+                    const created = await createEvent(payload)
+                    setEvents(evts => [...evts, created])
+                    form.reset()
+                  }
+                  setEventStatus(wasEditing ? 'updated' : 'saved')
+                } catch { setEventStatus('error') }
               }}>
-              <div><label style={labelStyle}>Event name *</label><input name="name" required style={inputStyle} /></div>
+              <div><label style={labelStyle}>Event name *</label><input name="name" required defaultValue={editingEvent?.name} style={inputStyle} /></div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div><label style={labelStyle}>Date and time *</label><input name="eventDate" type="datetime-local" required style={inputStyle} /></div>
-                <div><label style={labelStyle}>Price ($), 0 for free</label><input name="price" type="number" step="0.01" defaultValue="0" style={inputStyle} /></div>
+                <div><label style={labelStyle}>Date and time *</label><input name="eventDate" type="datetime-local" required defaultValue={editingEvent?.eventDate?.slice(0,16)} style={inputStyle} /></div>
+                <div><label style={labelStyle}>Price ($), 0 for free</label><input name="price" type="number" step="0.01" defaultValue={editingEvent?.price ?? 0} style={inputStyle} /></div>
               </div>
-              <div><label style={labelStyle}>Location</label><input name="location" style={inputStyle} /></div>
-              <div><label style={labelStyle}>Description</label><textarea name="description" rows={3} style={{...inputStyle, resize:'none'}} /></div>
-              <div><label style={labelStyle}>Capacity (blank for unlimited)</label><input name="capacity" type="number" style={inputStyle} /></div>
-              {eventStatus==='saved'&&<div style={{ background:c.redLight, color:c.red, borderRadius:'8px', padding:'12px', fontSize:'13px', fontWeight:600 }}>✓ Event saved and live on the website!</div>}
+              <div><label style={labelStyle}>Location</label><input name="location" defaultValue={editingEvent?.location} style={inputStyle} /></div>
+              <div><label style={labelStyle}>Description</label><textarea name="description" rows={3} defaultValue={editingEvent?.description} style={{...inputStyle, resize:'none'}} /></div>
+              <div><label style={labelStyle}>Capacity (blank for unlimited)</label><input name="capacity" type="number" defaultValue={editingEvent?.capacity ?? ''} style={inputStyle} /></div>
+              {(eventStatus==='saved'||eventStatus==='updated')&&<div style={{ background:c.redLight, color:c.red, borderRadius:'8px', padding:'12px', fontSize:'13px', fontWeight:600 }}>✓ {eventStatus==='updated' ? 'Event updated!' : 'Event saved and live on the website!'}</div>}
               {eventStatus==='error'&&<p style={{ color:c.red, fontSize:'13px' }}>Something went wrong. Please try again.</p>}
               <button type="submit" disabled={eventStatus==='saving'} style={{ background:c.red, color:'white', border:'none', padding:'12px', borderRadius:'8px', fontWeight:600, fontSize:'14px', cursor:'pointer', opacity:eventStatus==='saving'?0.6:1 }}>
-                {eventStatus==='saving'?'Saving…':'Save event, goes live immediately'}
+                {eventStatus==='saving' ? 'Saving…' : editingEvent ? 'Update event' : 'Save event, goes live immediately'}
               </button>
             </form>
+
+            <h3 style={{ fontWeight: 700, color: c.dark, marginBottom: '16px' }}>Published events ({events.length})</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {events.map((ev: any) => (
+                <div key={ev.id} style={{ background: 'white', border: `1px solid ${c.border}`, borderRadius: '10px', padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                  <div>
+                    <p style={{ fontWeight: 600, color: c.dark, margin: 0, fontSize: '14px' }}>{ev.name}</p>
+                    <p style={{ fontSize: '12px', color: c.muted, margin: '2px 0 0' }}>
+                      {ev.eventDate ? new Date(ev.eventDate).toLocaleString('en-NZ', { dateStyle: 'medium', timeStyle: 'short' }) : '—'} · {ev.location || 'No location'}
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={() => { setEditingEvent(ev); setEventStatus('idle'); window.scrollTo({ top: 0, behavior: 'smooth' }) }} style={{ ...smallBtn, background: c.redLight, color: c.red }}>Edit</button>
+                    <button onClick={() => handleDelete(ev)} disabled={deletingId===ev.id} style={{ ...smallBtn, background: 'transparent', color: c.red, border: `1px solid ${c.red}`, opacity: deletingId===ev.id?0.6:1 }}>
+                      {deletingId===ev.id ? 'Deleting…' : 'Delete'}
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {events.length===0 && <p style={{ color:c.muted, fontSize:'14px' }}>No published events yet.</p>}
+            </div>
           </div>
         )}
 
