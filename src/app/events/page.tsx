@@ -1,14 +1,10 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
-import Link from 'next/link'
 import Reveal from '@/components/Reveal'
 import EventsList from '@/components/EventsList'
-import { site } from '@/lib/site'
-import { assetPath } from '@/lib/path'
 
 export const metadata: Metadata = {
   title: 'Events',
-  description: 'Fundraisers, open days and community events at Waikato Equitherapy, including our charity quiz night.',
+  description: 'Fundraisers, open days and community events at Waikato Equitherapy.',
 }
 
 export default function EventsPage() {
@@ -26,38 +22,6 @@ export default function EventsPage() {
         </div>
       </section>
 
-      {/* Quiz night, our standing fundraiser */}
-      <section style={{ paddingBottom: 24 }}>
-        <div className="wrap">
-          <Reveal>
-            <div className="quiz">
-              <div>
-                <span className="pill">Fundraiser</span>
-                <h2 className="display-md" style={{ margin: '16px 0 12px' }}>Charity quiz night</h2>
-                <p className="body" style={{ marginBottom: 18, maxWidth: 520 }}>
-                  Our biggest night of the year. Get a team together, bring your general knowledge and your worst guesses,
-                  and help fund a term of riding. Scan the code to register, or ask us for a table.
-                </p>
-                <div className="row">
-                  <Link href="/contact" className="btn btn-primary">Register a team</Link>
-                  <a href={site.facebook} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">Details on Facebook ↗</a>
-                </div>
-              </div>
-              <div className="quiz-qr">
-                <Image
-                  src={assetPath("/images/quiz-night-qr.png")}
-                  alt="QR code linking to the quiz night registration page"
-                  width={190}
-                  height={190}
-                  style={{ width: 190, height: 'auto', display: 'block' }}
-                />
-                <p className="small muted center" style={{ marginTop: 10 }}>Scan to register</p>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
       <section className="section">
         <div className="wrap">
           <Reveal>
@@ -69,15 +33,6 @@ export default function EventsPage() {
       </section>
 
       <style>{`
-        .quiz {
-          display: grid; gap: 32px; align-items: center; grid-template-columns: 1fr;
-          background: var(--sand); border: 1px solid var(--rule); border-radius: 22px; padding: 36px;
-        }
-        @media (min-width: 820px) { .quiz { grid-template-columns: 1fr auto; } }
-        .quiz-qr {
-          background: #fff; border: 1px solid var(--rule); border-radius: 18px; padding: 18px;
-          box-shadow: var(--shadow-md); justify-self: center;
-        }
         .date-chip-lg {
           display: grid; place-items: center; background: var(--red-tint); color: var(--red-deep);
           border-radius: 14px; padding: 14px 18px; min-width: 76px; flex-shrink: 0; line-height: 1.1; height: fit-content;
