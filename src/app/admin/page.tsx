@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { createEvent, updateEvent, deleteEvent, getEvents, uploadGalleryImage, getGallery } from '@/lib/api'
+import { createEvent, updateEvent, deleteEvent, getEvents, uploadGalleryImage, updateGalleryImage, deleteGalleryImage, getGallery } from '@/lib/api'
 const ADMIN_PIN = 'Equitherapy@2026'
 const c = { red: 'var(--red)', creamDark: 'var(--grey)', redLight: 'var(--red-tint)', dark: '#1a1a1a', muted: '#7a6f67', border: 'var(--line)' }
 const inputStyle = { width: '100%', border: `1px solid ${c.border}`, borderRadius: '8px', padding: '10px 14px', fontSize: '14px', outline: 'none', background: 'white', boxSizing: 'border-box' as const }
@@ -17,6 +17,8 @@ export default function AdminPage() {
   const [deletingId, setDeletingId] = useState<string|number|null>(null)
   const [eventStatus, setEventStatus] = useState<'idle'|'saving'|'saved'|'updated'|'error'>('idle')
   const [uploadStatus, setUploadStatus] = useState<'idle'|'uploading'|'done'|'error'>('idle')
+  const [editingImageId, setEditingImageId] = useState<string|number|null>(null)
+  const [deletingImageId, setDeletingImageId] = useState<string|number|null>(null)
 
   useEffect(() => {
     if (authed) {
@@ -48,6 +50,32 @@ export default function AdminPage() {
       alert('Delete failed. Please try again.')
     } finally {
       setDeletingId(null)
+    }
+  }
+
+  async function handleDeleteImage(img: any) {
+    if (!confirm(`Delete "${img.title || 'this photo'}"? This cannot be undone.`)) return
+    setDeletingImageId(img.id)
+    try {
+      await deleteGalleryImage(img.id)
+      setGallery(g => g.filter(i => i.id !== img.id))
+      if (editingImageId === img.id) setEditingImageId(null)
+    } catch {
+      alert('Delete failed. Please try again.')
+    } finally {
+      setDeletingImageId(null)
+    }
+  }
+
+  async function handleSaveImage(img: any) {
+    const title = (document.getElementById(`gallery-title-${img.id}`) as HTMLInputElement)?.value ?? ''
+    const category = (document.getElementById(`gallery-category-${img.id}`) as HTMLSelectElement)?.value ?? ''
+    try {
+      const updated = await updateGalleryImage(img.id, { title, category })
+      setGallery(g => g.map(i => i.id === img.id ? updated : i))
+      setEditingImageId(null)
+    } catch {
+      alert('Update failed. Please try again.')
     }
   }
 
@@ -162,7 +190,36 @@ export default function AdminPage() {
             </form>
             <h3 style={{ fontWeight: 700, color: c.dark, marginBottom: '16px' }}>Current gallery ({gallery.length} photos)</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px' }}>
-              {gallery.map((img: any) => <div key={img.id} style={{ borderRadius: '10px', overflow: 'hidden', border: `1px solid ${c.border}` }}><img src={img.imageUrl} alt={img.title} style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', display: 'block' }} /><p style={{ fontSize: '11px', color: c.muted, padding: '6px 10px', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{img.title||'Untitled'}</p></div>)}
+              {gallery.map((img: any) => (
+                <div key={img.id} style={{ borderRadius: '10px', overflow: 'hidden', border: `1px solid ${c.border}`, background: 'white' }}>
+                  <img src={img.imageUrl} alt={img.title} style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', display: 'block' }} />
+                  {editingImageId === img.id ? (
+                    <div style={{ padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <input id={`gallery-title-${img.id}`} defaultValue={img.title} placeholder="Title" style={{ ...inputStyle, fontSize: 12, padding: '6px 8px' }} />
+                      <select id={`gallery-category-${img.id}`} defaultValue={img.category} style={{ ...inputStyle, fontSize: 12, padding: '6px 8px' }}>
+                        <option value="horses">Horses</option>
+                        <option value="riders">Riders</option>
+                        <option value="volunteers">Volunteers</option>
+                        <option value="events">Events</option>
+                      </select>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button onClick={() => handleSaveImage(img)} style={{ ...smallBtn, background: c.red, color: 'white', flex: 1, padding: '4px 8px', fontSize: 11 }}>Save</button>
+                        <button onClick={() => setEditingImageId(null)} style={{ ...smallBtn, background: 'transparent', color: c.muted, border: `1px solid ${c.border}`, padding: '4px 8px', fontSize: 11 }}>Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ padding: '6px 10px' }}>
+                      <p style={{ fontSize: '11px', color: c.muted, margin: '0 0 6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{img.title||'Untitled'}</p>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button onClick={() => setEditingImageId(img.id)} style={{ ...smallBtn, background: c.redLight, color: c.red, flex: 1, padding: '4px 8px', fontSize: 11 }}>Edit</button>
+                        <button onClick={() => handleDeleteImage(img)} disabled={deletingImageId===img.id} style={{ ...smallBtn, background: 'transparent', color: c.red, border: `1px solid ${c.red}`, flex: 1, padding: '4px 8px', fontSize: 11, opacity: deletingImageId===img.id?0.6:1 }}>
+                          {deletingImageId===img.id ? '…' : 'Delete'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
               {gallery.length===0&&<p style={{ color:c.muted, fontSize:'14px', gridColumn:'1/-1' }}>No photos yet.</p>}
             </div>
           </div>

@@ -78,3 +78,19 @@ export async function deleteEvent(id: string | number) {
   if (!res.ok) throw new Error('Failed to delete event')
   return res.json()
 }
+
+export async function updateGalleryImage(id: string | number, data: unknown) {
+  const res = await fetch(`${BASE}/api/gallery/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error('Failed to update photo')
+  return res.json()
+}
+
+export async function deleteGalleryImage(id: string | number) {
+  const res = await fetch(`${BASE}/api/gallery/${id}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error('Failed to delete photo')
+  return res.json()
+}
