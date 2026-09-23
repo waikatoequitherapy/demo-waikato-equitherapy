@@ -13,7 +13,7 @@ async function post(path: string, body: unknown) {
 
 export async function getEvents() {
   try {
-    const res = await fetch(`${BASE}/api/events`, { cache: 'no-store' })
+    const res = await fetch(`${BASE}/api/events`)
     if (!res.ok) return []
     return res.json()
   } catch { return [] }
